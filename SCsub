@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+Import('env')
+Import('env_modules')
+
+env_htn_inductor = env_modules.Clone()
+
+env_htn_inductor.Prepend(CPPPATH=['.'])
+env_htn_inductor.Prepend(CPPPATH=['src'])
+
+env_thirdparty = env_htn_inductor.Clone()
+# env_thirdparty.disable_warnings()
+# env_thirdparty.add_source_files(env.modules_sources, "src/htn/*.cpp")
+env_thirdparty.add_source_files(env.modules_sources, "src/parser/*.cpp")
+# env_thirdparty.add_source_files(env.modules_sources, "src/prolog/*.cpp")
+
+env_htn_inductor.add_source_files(env.modules_sources, "*.cpp")
