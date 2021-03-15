@@ -1,0 +1,82 @@
+// MIT License
+
+// Copyright (c) 2019 Eric Zinda, Inductor Software, LLC
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+// Implements an HTN Planning engine in Prolog
+// HTNs are described here: https://blog.inductorsoftware.com/blog/InductorHtnOverview
+
+// Syntax for declaring HTN Methods and operators are shown in the tests at the end of the file
+// Note that this engine requires that operators only add and remove RDF-like "triples"
+// from the store.  I.e. data in the form rel(Subject, Relationship, Object)
+// It is designed for a system that stores all its data in triples of that form.
+// Note, however, that any of the three values (Subject, Relationship, Object)
+// can be any complex term, however, so it is pretty general
+
+.type SymbolList = [
+    head : symbol,
+    tail : List
+]
+
+.decl DebugHtnTopic(nextGoal:symbol)
+.decl NextGoal(nextGoal:symbol, restOfGoals:SymbolList, solutionIn:SymbolList, solutionOut:SymbolList)
+.decl applyFirstPlan([nextGoal:symbol | restOfGoals:SymbolList], solution:SymbolList)
+.decl findPlans([NextGoal | RestOfGoals], Solutions)
+.output findPlans
+
+
+DebugHtnTopic(nextGoal) :- 
+    cat("htn(method): Next goal: ", nextGoal)
+
+NextGoal(nextGoal, restOfGoals, solutionIn, solutionOut) :-
+    debugHtnTopic(nextGoal),
+    call(nextGoal, context(restOfGoals, solutionIn, solutionOut, nextGoal)).
+
+applyFirstPlan([NextGoal | RestOfGoals], Solution) :-
+    once(findPlan([NextGoal | RestOfGoals], Solution)),
+    applyFirstSolution([Solution]).
+
+// Finds each plan that solves the goals through backtracking
+findPlan([NextGoal | RestOfGoals], Solution) :-
+    nextGoal(NextGoal, RestOfGoals, [], SolutionReversed),
+    reverse(SolutionReversed, Solution).
+
+// Finds *all* plans that solve the goals and returns a set of sets
+
+findPlans([NextGoal | RestOfGoals], Solutions) :-
+    findall(Solution, findPlan([NextGoal | RestOfGoals], Solution), Solutions).
+
+// ***** storage predicates *****
+// The engine needs store/4, store_assert/4 and store_retractall/4 as wrappers
+// around however the data is being stored.
+// These predicates store "triples" like RDF does with a Subject, Relationship and Object
+// the "Graph" argument is used as a kind of "namespace" for the data so that some relationships
+// can be stored away hidden from certain queries that use a different Graph atom.
+
+// Convert into souffle records
+
+// store(Subject, Rel, Object, Graph) :-
+//     data(Subject, Rel, Object, Graph).
+
+// store_assert(Subject, Rel, Object, Graph) :-
+//     assert(data(Subject, Rel, Object, Graph)).
+
+// store_retractall(Subject, Rel, Object, Graph) :-
+//     retractall(data(Subject, Rel, Object, Graph)).

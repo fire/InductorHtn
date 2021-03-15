@@ -1,0 +1,53 @@
+# Replace rules with strings
+Document <- ( PrologRule / PrologFunctor / PrologList) "."
+PrologRule <- PrologFunctor ColonString DashString
+PrologFunctor <- (NotPeekExpression PrologAtom) / (LeftParenthesisString RightParenthesisString)
+PrologAtom <- Float / Integer / MathSymbol* / ExclamationPointString / DoubleQuoteString DoubleQuoteString? DoubleQuoteString
+            / SingleQuoteString SingleQuoteString? SingleQuoteString
+			/ (CharSymbol / HyphenString)
+            / CharOrNumberSymbol / Underscore / HyphenString
+Float <- "Float"
+Integer <- "Integer"
+CharSymbol <- "CharSymbol"
+MathSymbol <- "MathSymbol"
+NotPeekExpression <- "NotPeekExpression"
+CharOrNumberSymbol <- "CharOrNumberSymbol"
+PrologList <- "PrologList"
+# MaxSymbol <- AmpersandString / AsterixString / AtString / Chars / CharsAndNumbers / ColonString / CommaString / DashString / DoubleQuoteString / EqualString / ExclamationPointString / ForwardSlashString / GreaterThanString / HexNumbers / HyphenString / LeftBraceString / LeftBracketString / LeftParenthesisString / LessThanString / MathString / NullString / Numbers / PercentString / PeriodString / PlusString / PipeString / PoundString / QuestionMarkString / RightBracketString / RightBraceString / RightParenthesisString / SemicolonString / SingleArrowString / SingleQuoteString / Underscore
+# AmpersandString <- "&"
+# AsterixString <- "*"
+# AtString <- "@"
+# Chars <- [ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]*
+# CharsAndNumbers <- [1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]*
+ColonString <- ":"
+# CommaString <- ","
+DashString <- "-"
+DoubleQuoteString <- "\""
+# EqualString <- "="
+ExclamationPointString <- "!"
+# ForwardSlashString <- "/"
+# GreaterThanString <- ">"
+# HexNumbers <- "1234567890ABCDEFabcdef"
+HyphenString <- "-"
+# LeftBraceString <- "{"
+# LeftBracketString <- "["
+LeftParenthesisString <- "("
+# LessThanString <- "<"
+# MathString <- "+-<>=/*\\"
+# NullString <- ""
+# Numbers <- "1234567890"
+# PercentString <- "%"
+# PeriodString <- "."
+# PlusString <- "+"
+# PipeString <- "|"
+# PoundString <- "#"
+# QuestionMarkString <- "?"
+# RightBracketString <- "]"
+# RightBraceString <- "}"
+RightParenthesisString <- ")"
+# SemicolonString <- ""
+# SingleArrowString <- "->"
+SingleQuoteString <- "'"
+Underscore <- "_"
+
+%whitespace <- [\r\n\t ]*
